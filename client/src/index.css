@@ -1,0 +1,20 @@
+@font-face {
+  font-family: "Iran-sanse";
+  src: url("./assets/fonts/IranSans.ttf");
+}
+
+* {
+  font-family: "Iran-sanse";
+}
+
+button {
+  font-family: "Iran-sanse";
+
+}
+
+body {
+  direction: rtl;
+  margin: 0;
+  font-family: "Iran-sanse";
+  background-color: #f3f4f6;
+}
