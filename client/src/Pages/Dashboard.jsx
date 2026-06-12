@@ -197,7 +197,7 @@ function Dashboard() {
       <nav className="navbar">
         <h3>
           <i>
-            <img className="logo" src="./public/tasks.png" alt="logo-image" />
+            <img className="logo" src="/tasks.png" alt="logo-image" />
           </i>
         </h3>
         <h2 className="nav-title">
