@@ -16,9 +16,19 @@
 
 }
 
+
+.error-text {
+    color: #ef4444;
+    font-size: 13px;
+    margin-top: 5px;
+    margin-bottom: 0;
+    padding-right: 5px;
+}
+
 .password-box {
     position: relative;
     width: 100%;
+    margin-bottom: 0;
 }
 
 .password-eye {
@@ -68,6 +78,8 @@
 .auth-input {
     width: 100%;
 
+    box-sizing: border-box;
+
     padding: 15px;
 
     border-radius: 14px;
@@ -87,7 +99,7 @@
     padding: 15px;
 
     border-radius: 14px;
-
+    width: 100%;
     border: none;
 
     cursor: pointer;
@@ -109,12 +121,19 @@
 }
 
 .auth-link {
-    text-align: center;
-
     text-decoration: none;
-
     color: white;
+    text-align: center;
 }
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+}
+
+
 
 .welcome-section {
     text-align: center;

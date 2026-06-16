@@ -6,6 +6,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import Navbar from "../components/Navbar";
+import TaskCard from "../components/TaskCard";
+import TaskModal from "../components/TaskModal";
+import TaskStats from "../components/TaskStats";
+import TaskFilters from "../components/TaskFilters";
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState("");
@@ -194,25 +199,12 @@ function Dashboard() {
   const user = token ? jwtDecode(token) : null;
   return (
     <div className={darkMode ? "app dark" : "app"}>
-      <nav className="navbar">
-        <h3>
-          <i>
-            <img className="logo" src="/tasks.png" alt="logo-image" />
-          </i>
-        </h3>
-        <h2 className="nav-title">
-          مدیریت کارهای روزمره خود را به ما بسپارید :)
-        </h2>
-        <div className="nav-actions">
-          <span className="user-name">سلام {user?.name} 👤</span>
-          <button onClick={() => setDarkMode(!darkMode)} className="dark-btn">
-            {darkMode ? "☀️" : "🌙"}
-          </button>
-          <button onClick={handleLogout} className="dark-btn">
-            خروج
-          </button>
-        </div>
-      </nav>
+      <Navbar
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        handleLogout={handleLogout}
+        user={user}
+      />
 
       <div className="container">
         <div className="card">
@@ -222,197 +214,41 @@ function Dashboard() {
             <button onClick={() => setShowModal(true)} className="add-task-btn">
               افزودن تسک جدید ➕
             </button>
-            {showModal && (
-              <div className="modal-overlay">
-                <div className="modal">
-                  <button
-                    className="close-modal"
-                    onClick={() => setShowModal(false)}
-                  >
-                    ✖
-                  </button>
-                  <h2>{editingTask ? "ویرایش تسک ✏️" : "تسک جدید ✨"}</h2>
-
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      placeholder="تسک جدید وارد کن..."
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      className="task-input"
-                    />
-
-                    <select
-                      value={priority}
-                      onChange={(e) => setPriority(e.target.value)}
-                      className="priority-select"
-                    >
-                      <option value="low">🟢 کم اهمیت</option>
-
-                      <option value="medium">🟡 متوسط</option>
-
-                      <option value="high">🔴 مهم</option>
-                    </select>
-
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="priority-select"
-                    >
-                      <option value="personal">👤 شخصی</option>
-
-                      <option value="university">🎓 دانشگاه</option>
-
-                      <option value="work">💼 کاری</option>
-
-                      <option value="shopping">🛒 خرید</option>
-                    </select>
-
-                    <button
-                      onClick={() => {
-                        addTask();
-                        setShowModal(false);
-                      }}
-                      className="button"
-                    >
-                      {editingTask ? "ذخیره تغییرات ✅" : "ذخیره تسک ✅"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="stats">
-            <div className="stat-box">📋 تعداد کل وظایف : {tasks.length}</div>
-          </div>
-          <div className="progress-section">
-            <div className="progress-info"> 📈 میزان پیشرفت: {progress}%</div>
-
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
-          </div>
-          <div className="search-box">
-            <span className="search-icon">🔍</span>
-
-            <input
-              type="text"
-              placeholder="جستجوی تسک‌ها..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="search-input"
+            <TaskModal
+              showModal={showModal}
+              setShowModal={setShowModal}
+              editingTask={editingTask}
+              input={input}
+              setInput={setInput}
+              priority={priority}
+              setPriority={setPriority}
+              category={category}
+              setCategory={setCategory}
+              addTask={addTask}
             />
           </div>
-          <div className="container_tabs">
-            <div className="tabs">
-              <button
-                onClick={() => setFilterStatus("all")}
-                className={filterStatus === "all" ? "tab active-tab" : "tab"}
-              >
-                📋 همه
-              </button>
+          <TaskStats tasks={tasks} progress={progress} />
 
-              <button
-                onClick={() => setFilterStatus("completed")}
-                className={
-                  filterStatus === "completed" ? "tab active-tab" : "tab"
-                }
-              >
-                ✅ انجام شده
-              </button>
-
-              <button
-                onClick={() => setFilterStatus("uncompleted")}
-                className={
-                  filterStatus === "uncompleted" ? "tab active-tab" : "tab"
-                }
-              >
-                ⏳ انجام نشده
-              </button>
-            </div>
-            <select
-              value={sortType}
-              onChange={(e) => setSortType(e.target.value)}
-              className="sort-select"
-            >
-              <option value="newest">جدیدترین</option>
-
-              <option value="oldest">قدیمی‌ترین</option>
-
-              <option value="high">اولویت زیاد</option>
-            </select>
-          </div>
+          <TaskFilters
+            search={search}
+            setSearch={setSearch}
+            filterStatus={filterStatus}
+            setFilterStatus={setFilterStatus}
+            sortType={sortType}
+            setSortType={setSortType}
+          />
 
           <div className="task-list">
             {sortedTasks.length > 0 ? (
               sortedTasks.map((task) => (
-                <div
+                <TaskCard
                   key={task._id}
-                  className={
-                    task.completed ? "task-item completed" : "task-item"
-                  }
-                >
-                  <div className="task-top">
-                    <div className="pin-icon">{task.pinned && "📌"}</div>
-                    <h3 className="task-title">{task.text}</h3>
-                    <button onClick={() => pinTask(task)} className="pin-btn">
-                      {task.pinned ? "📌 سنجاق شده" : "📍 سنجاق کن"}
-                    </button>
-                  </div>
-
-                  <div className="task-details">
-                    <span>
-                      📅 تاریخ:
-                      {new Date(task.createdAt).toLocaleDateString("fa-IR")}
-                    </span>
-
-                    <span>
-                      🕒 ساعت ثبت:
-                      {new Date(task.createdAt).toLocaleTimeString("fa-IR")}
-                    </span>
-
-                    <span>
-                      🎓 دسته‌بندی:
-                      {task.category === "personal"
-                        ? "شخصی"
-                        : task.category === "study"
-                          ? "دانشگاه"
-                          : "کاری"}
-                    </span>
-
-                    <span>
-                      🔥 اولویت:
-                      {task.priority === "high"
-                        ? "زیاد"
-                        : task.priority === "medium"
-                          ? "متوسط"
-                          : "کم"}
-                    </span>
-                  </div>
-
-                  <div className="task-buttons">
-                    <button
-                      onClick={() => toggleTask(task)}
-                      className="complete-btn"
-                    >
-                      انجام شد
-                    </button>
-
-                    <button onClick={() => editTask(task)} className="edit-btn">
-                      ویرایش
-                    </button>
-
-                    <button
-                      onClick={() => deleteTask(task._id)}
-                      className="delete-btn"
-                    >
-                      حذف
-                    </button>
-                  </div>
-                </div>
+                  task={task}
+                  toggleTask={toggleTask}
+                  editTask={editTask}
+                  deleteTask={deleteTask}
+                  pinTask={pinTask}
+                />
               ))
             ) : (
               <div className="empty-state">

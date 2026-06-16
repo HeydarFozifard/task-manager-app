@@ -8,30 +8,27 @@ import { TypeAnimation } from "react-type-animation";
 import { Link } from "react-router-dom";
 import "../Auth.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "../schemas/authSchema";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-  const handleLogin = async () => {
-    if (!email.includes("@")) {
-      toast.error("ایمیل معتبر وارد کنید");
-      return;
-    }
-
-    if (password.length < 8) {
-      toast.error("رمز عبور باید حداقل 8 کاراکتر باشد");
-      return;
-    }
+  const handleLogin = async (data) => {
     try {
-      const response = await api.post("/auth/login", {
-        email,
-        password,
-      });
+      const response = await api.post("/auth/login", data);
 
       localStorage.setItem("token", response.data.token);
+
       toast.success("با موفقیت وارد شدید ✅");
 
       setTimeout(() => {
@@ -65,37 +62,41 @@ function Login() {
       <div className="auth-card">
         <h1 className="auth-title">ورود</h1>
 
-        <input
-          className="auth-input"
-          type="email"
-          placeholder="ایمیل"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <div className="password-box">
+        <form onSubmit={handleSubmit(handleLogin)} className="form">
           <input
             className="auth-input"
-            type={showPassword ? "text" : "password"}
-            placeholder="رمز عبور"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            type="email"
+            placeholder="ایمیل"
+            {...register("email")}
           />
+          {errors.email && <p className="error-text">{errors.email.message}</p>}
+          <div className="password-box">
+            <input
+              className="auth-input"
+              type={showPassword ? "text" : "password"}
+              placeholder="رمز عبور"
+              {...register("password")}
+            />
+            {errors.password && (
+              <p className="error-text">{errors.password.message}</p>
+            )}
 
-          <span
-            className="password-eye"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </span>
-        </div>
+            <span
+              className="password-eye"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
 
-        <button className="auth-btn" onClick={handleLogin}>
-          ورود
-        </button>
+          <button type="submit" className="auth-btn">
+            ورود
+          </button>
 
-        <Link to="/register" className="auth-link">
-          حساب نداری؟ ثبت نام کن
-        </Link>
+          <Link to="/register" className="auth-link">
+            حساب نداری؟ ثبت نام کن
+          </Link>
+        </form>
       </div>
       <ToastContainer position="top-center" autoClose={2000} />
     </div>

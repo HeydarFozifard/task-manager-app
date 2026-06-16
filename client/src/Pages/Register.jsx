@@ -8,39 +8,28 @@ import { ToastContainer } from "react-toastify";
 import { TypeAnimation } from "react-type-animation";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema } from "../schemas/authSchema";
 function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+  });
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleRegister = async () => {
-    if (name.trim().length < 3) {
-      toast.error("نام باید حداقل 3 حرف باشد");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      toast.error("ایمیل معتبر نیست");
-      return;
-    }
-
-    if (password.length < 8) {
-      toast.error("رمز عبور باید حداقل 8 کاراکتر باشد");
-      return;
-    }
+  const handleRegister = async (data) => {
     try {
-      await api.post("/auth/register", {
-        name,
-        email,
-        password,
-      });
+      await api.post("/auth/register", data);
 
-      alert("ثبت نام موفق ✅");
+      toast.success("ثبت نام موفق ✅");
 
       navigate("/login");
     } catch (error) {
-      alert("خطا در ثبت نام");
+      toast.error(error.response?.data?.message || "خطا در ثبت نام");
     }
   };
   const navigate = useNavigate();
@@ -67,46 +56,52 @@ function Register() {
       </div>
       <div className="auth-card">
         <h1 className="auth-title">ثبت نام</h1>
-
-        <input
-          className="auth-input"
-          type="text"
-          placeholder="نام"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-
-        <input
-          className="auth-input"
-          type="email"
-          placeholder="ایمیل"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <div className="password-box">
+        <form onSubmit={handleSubmit(handleRegister)} className="form">
           <input
             className="auth-input"
-            type={showPassword ? "text" : "password"}
-            placeholder="رمز عبور"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            type="text"
+            placeholder="نام"
+            {...register("name")}
           />
 
-          <span
-            className="password-eye"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </span>
-        </div>
+          {errors.name && <p className="error-text">{errors.name.message}</p>}
 
-        <button className="auth-btn" onClick={handleRegister}>
-          ثبت نام
-        </button>
+          <input
+            className="auth-input"
+            type="email"
+            placeholder="ایمیل"
+            {...register("email")}
+          />
 
-        <Link to="/login" className="auth-link">
-          حساب داری؟ وارد شو
-        </Link>
+          {errors.email && <p className="error-text">{errors.email.message}</p>}
+          <div className="password-box">
+            <input
+              className="auth-input"
+              type={showPassword ? "text" : "password"}
+              placeholder="رمز عبور"
+              {...register("password")}
+            />
+
+            <span
+              className="password-eye"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
+
+          {errors.password && (
+            <p className="error-text">{errors.password.message}</p>
+          )}
+
+          <button type="submit" className="auth-btn">
+            ثبت نام
+          </button>
+
+          <Link to="/login" className="auth-link">
+            حساب داری؟ وارد شو
+          </Link>
+        </form>
       </div>
       <ToastContainer position="top-center" autoClose={2000} />
     </div>
