@@ -4,6 +4,7 @@ import api from "../services/api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
+import EmptyState from "../common/EmptyState";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Navbar from "../components/Navbar";
@@ -11,8 +12,9 @@ import TaskCard from "../components/TaskCard";
 import TaskModal from "../components/TaskModal";
 import TaskStats from "../components/TaskStats";
 import TaskFilters from "../components/TaskFilters";
+import useTasks from "../hooks/useTasks";
 function Dashboard() {
-  const [tasks, setTasks] = useState([]);
+  const { tasks, fetchTasks } = useTasks();
   const [input, setInput] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
@@ -28,16 +30,6 @@ function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
-  };
-
-  const fetchTasks = async () => {
-    try {
-      const response = await api.get("/tasks");
-
-      setTasks(response.data);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const addTask = async () => {
@@ -190,9 +182,6 @@ function Dashboard() {
 
     return 0;
   });
-  useEffect(() => {
-    fetchTasks();
-  }, []);
 
   const token = localStorage.getItem("token");
 
@@ -251,13 +240,7 @@ function Dashboard() {
                 />
               ))
             ) : (
-              <div className="empty-state">
-                <div className="empty-icon">📭</div>
-
-                <h2>تسکی پیدا نشد</h2>
-
-                <p>یه تسک جدید اضافه کن ✨</p>
-              </div>
+              <EmptyState />
             )}
           </div>
         </div>
