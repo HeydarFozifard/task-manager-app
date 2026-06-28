@@ -1,3 +1,5 @@
+import { priorityOptions, categoryOptions } from "../common/selectOptions";
+
 function TaskModal({
   showModal,
   setShowModal,
@@ -15,74 +17,43 @@ function TaskModal({
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <button
-          className="close-modal"
-          onClick={() =>
-            setShowModal(false)
-          }
-        >
+        <button className="close-modal" onClick={() => setShowModal(false)}>
           ✖
         </button>
 
-        <h2>
-          {editingTask
-            ? "ویرایش تسک ✏️"
-            : "تسک جدید ✨"}
-        </h2>
+        <h2>{editingTask ? "ویرایش تسک ✏️" : "تسک جدید ✨"}</h2>
 
         <div className="input-group">
           <input
             type="text"
             placeholder="تسک جدید وارد کن..."
             value={input}
-            onChange={(e) =>
-              setInput(e.target.value)
-            }
+            onChange={(e) => setInput(e.target.value)}
             className="task-input"
           />
 
           <select
             value={priority}
-            onChange={(e) =>
-              setPriority(e.target.value)
-            }
+            onChange={(e) => setPriority(e.target.value)}
             className="priority-select"
           >
-            <option value="low">
-              🟢 کم اهمیت
-            </option>
-
-            <option value="medium">
-              🟡 متوسط
-            </option>
-
-            <option value="high">
-              🔴 مهم
-            </option>
+            {priorityOptions.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.icon} {item.title}
+              </option>
+            ))}
           </select>
 
           <select
             value={category}
-            onChange={(e) =>
-              setCategory(e.target.value)
-            }
+            onChange={(e) => setCategory(e.target.value)}
             className="priority-select"
           >
-            <option value="personal">
-              👤 شخصی
-            </option>
-
-            <option value="university">
-              🎓 دانشگاه
-            </option>
-
-            <option value="work">
-              💼 کاری
-            </option>
-
-            <option value="shopping">
-              🛒 خرید
-            </option>
+            {categoryOptions.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.icon} {item.title}
+              </option>
+            ))}
           </select>
 
           <button
@@ -92,9 +63,7 @@ function TaskModal({
             }}
             className="button"
           >
-            {editingTask
-              ? "ذخیره تغییرات ✅"
-              : "ذخیره تسک ✅"}
+            {editingTask ? "ذخیره تغییرات ✅" : "ذخیره تسک ✅"}
           </button>
         </div>
       </div>

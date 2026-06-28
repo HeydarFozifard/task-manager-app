@@ -1,3 +1,5 @@
+import { sortOptions } from "../common/selectOptions";
+
 function TaskFilters({
   search,
   setSearch,
@@ -51,11 +53,11 @@ function TaskFilters({
           onChange={(e) => setSortType(e.target.value)}
           className="sort-select"
         >
-          <option value="newest">جدیدترین</option>
-
-          <option value="oldest">قدیمی‌ترین</option>
-
-          <option value="high">اولویت زیاد</option>
+          {sortOptions.map((item) => (
+            <option key={item.value} value={item.value}>
+              {item.icon} {item.title}
+            </option>
+          ))}
         </select>
       </div>
     </>
